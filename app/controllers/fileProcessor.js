@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 
 // Set up multer for handling file uploads
-const storage = multer.memoryStorage(); // Store the file in memory
+const storage = multer.memoryStorage(); // Store the file in memory 
 const upload = multer({ storage });
 
 // Define a route for uploading a text file
