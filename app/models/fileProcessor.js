@@ -21,7 +21,6 @@ const transporter = nodemailer.createTransport({
 async function processFile(transporter, email, fileBuffer, filename, mimeType) {
     try {
         // Check if the recipient is a valid email in the database
-        console.log(email);
         const { rowCount } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
         if (rowCount === 0) {
@@ -48,13 +47,12 @@ async function processFile(transporter, email, fileBuffer, filename, mimeType) {
         // Update the document_path for the user
 
         await pool.query('UPDATE users SET document_path = $1 WHERE email = $2', [filePath, email]);
-        console.log("document path is set in the database")
 
 
         // Send email with the CSV attachment
         const mailInfo = await transporter.sendMail({
             from: admin, // Sender's email address
-            to: recipient, // Recipient's email address
+            to: email, // Recipient's email address
             subject: 'Text File',
             text: 'Please find the attached file for approving/rejecting.',
             attachments: [
@@ -115,14 +113,36 @@ async function getFile(filename) {
 async function updateDocumentStatus(username, documentStatus) {
     try {
         // Check if the user exists in the "Users" table
-        const { rowCount } = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        const { rowCount, rows } = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
         if (rowCount === 0) {
             return 0; // User not found
         }
 
+        const user = rows[0]; // Get the user information
+
         // Update the document_status for the user
         await pool.query('UPDATE users SET document_status = $1 WHERE username = $2', [documentStatus, username]);
+
+        if (documentStatus === "rejected") {
+            // Fetch the document_path
+            const documentPath = user.document_path;
+
+            // Fetch the name of the approver (assuming the column is named 'approver_name')
+            const approverName = user.name;
+
+            // Construct the hyperlink
+            const documentLink = `<a href="${documentPath}">${documentPath}</a>`;
+
+            // Send an email to the admin with the document link and approver's name
+            await transporter.sendMail({
+                from: admin,
+                to: admin, // Admin's email
+                subject: 'Document Rejected',
+                html: `Please correct the anomaly in the attached document and update it to send the approver again.<br>Approver's Name - ${approverName}<br>Document Link - ${documentLink}`,
+            });
+            console.log("Email sent to admin for correcting the anomaly");
+        }
 
         return 1; // Document status updated successfully
     } catch (error) {
@@ -130,6 +150,7 @@ async function updateDocumentStatus(username, documentStatus) {
         return -1; // Error occurred
     }
 }
+
 
 module.exports = { updateDocumentStatus, processFile, getFile, transporter };
 

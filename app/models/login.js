@@ -19,7 +19,7 @@ async function login(username, password) {
         // Compare the password from the request with the hashed password from the database
         if (password === user.password) {
             // Passwords match, generate a JWT token
-            const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ username }, secretKey, { expiresIn: '12h' });
             return { message: 'You have logged in successfully.', token };
 
         } else {
