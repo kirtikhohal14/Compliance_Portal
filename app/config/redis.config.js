@@ -1,7 +1,7 @@
 const { createClient } = require('redis')
 
 const client = createClient();
-
+console.log("redis connection")
 client.connect();
 
 

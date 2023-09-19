@@ -3,8 +3,11 @@ const login = require('./controllers/login'); // Import the login controller
 const forgetpass = require('./controllers/resetPassword') //Import the reset password controller
 const verifyToken = require('./middleware/tokenauth'); // Import the verifyToken middleware
 const fileProcessor = require('./controllers/fileProcessor'); // Import the fileProcessor controller
-
 const app = express();
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger.config');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Add the auth routes
 app.use('/api',forgetpass);
