@@ -8,6 +8,11 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for file upload and document management',
     },
+    servers: [
+      {
+        url: '/api', // Define your base URL here
+      },
+    ],
   },
   apis: ['./app/controllers/login.js',
         './app/controllers/resetPassword.js',

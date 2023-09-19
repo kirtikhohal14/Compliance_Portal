@@ -25,6 +25,13 @@ const upload = multer({ storage });
  *     summary: Upload a document
  *     description: Upload a text document and send it to a recipient.
  *     tags: [File Management]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         description: Access token
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -100,6 +107,12 @@ app.post('/upload-doc', upload.single('file'), async (req, res) => {
  *         schema:
  *           type: string
  *         description: The filename of the file to fetch.
+ *       - in: header
+ *         name: x-access-token
+ *         description: Access token
+ *         required: true
+ *         schema:
+ *           type: string
  *     responses:
  *       '200':
  *         description: File fetched successfully and available for download
@@ -136,9 +149,16 @@ app.get('/fetch-file', async (req, res) => {
  * @swagger
  * /update-doc-status:
  *   post:
- *     summary: Update document status
- *     description: Update the status of a document for a user.
+ *     summary: Update Document Status
+ *     description: Update the status of a document for a specific user.
  *     tags: [File Management]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         description: Access token
+ *         required: true
+ *         schema:
+ *           type: string
  *     requestBody:
  *       required: true
  *       content:
@@ -148,19 +168,54 @@ app.get('/fetch-file', async (req, res) => {
  *             properties:
  *               username:
  *                 type: string
- *                 description: The username of the user.
  *               document_status:
  *                 type: string
- *                 description: The new status of the document.
  *     responses:
  *       '200':
- *         description: Document status updated successfully
+ *         description: Document status updated successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  *       '400':
- *         description: Bad request or missing data
+ *         description: Bad request or missing request data.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       '401':
+ *         description: Unauthorized - Access token is required.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  *       '404':
- *         description: User not found
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  *       '500':
- *         description: Internal server error
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */
 app.post('/update-doc-status', async (req, res) => {
     try {
