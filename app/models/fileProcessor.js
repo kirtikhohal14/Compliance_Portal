@@ -124,7 +124,7 @@ async function updateDocumentStatus(username, documentStatus) {
         // Update the document_status for the user
         await pool.query('UPDATE users SET document_status = $1 WHERE username = $2', [documentStatus, username]);
 
-        if (documentStatus === "rejected") {
+        if (documentStatus === "rejected") {    
             // Fetch the document_path
             const documentPath = user.document_path;
 
@@ -142,6 +142,9 @@ async function updateDocumentStatus(username, documentStatus) {
                 html: `Please correct the anomaly in the attached document and update it to send the approver again.<br>Approver's Name - ${approverName}<br>Document Link - ${documentLink}`,
             });
             console.log("Email sent to admin for correcting the anomaly");
+
+            // Update the document_status back to "pending"
+            await pool.query('UPDATE users SET document_status = $1 WHERE username = $2', ['document_under_correction', username]);
         }
 
         return 1; // Document status updated successfully

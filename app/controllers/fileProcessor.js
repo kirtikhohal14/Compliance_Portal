@@ -76,11 +76,11 @@ const upload = multer({ storage });
 
 app.post('/upload-doc', upload.single('file'), async (req, res) => {
     try {
-        const { recipient } = req.body;
+        const { email } = req.body;
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        const result = await fileProcessor.processFile(fileProcessor.transporter, recipient, req.file.buffer, req.file.originalname, req.file.mimetype);
+        const result = await fileProcessor.processFile(fileProcessor.transporter, email, req.file.buffer, req.file.originalname, req.file.mimetype);
 
         if (result === 1) {
             return res.status(201).json({ message: 'This file has been mailed successfully to the recipient' });
