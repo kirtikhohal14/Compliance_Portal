@@ -22,6 +22,9 @@
     "path": "^0.12.7",
     "pg": "^8.11.3",
     "redis": "^4.6.8",
-    "stream": "^0.0.2"
+    "stream": "^0.0.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "yaml": "^2.3.2"
   }
 }

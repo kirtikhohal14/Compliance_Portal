@@ -7,31 +7,109 @@ const app = express();
 app.use(express.json());
 
 // Set up multer for handling file uploads
-const storage = multer.memoryStorage(); // Store the file in memory 
+const storage = multer.memoryStorage(); // Store the file in memory
 const upload = multer({ storage });
 
-// Define a route for uploading a text file
+
+/**
+ * @swagger
+ * tags:
+ *   name: File Management
+ *   description: API endpoints for file management
+ */
+
+/**
+ * @swagger
+ * /upload-doc:
+ *   post:
+ *     summary: Upload a document
+ *     description: Upload a text document and send it to a recipient.
+ *     tags: [File Management]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *               recipient:
+ *                 type: string
+ *     responses:
+ *       '201':
+ *         description: File uploaded successfully and email sent
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       '400':
+ *         description: Bad request or missing file
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       '500':
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
 app.post('/upload-doc', upload.single('file'), async (req, res) => {
     try {
-        const { email } = req.body;
+        const { recipient } = req.body;
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        const result = await fileProcessor.processFile(fileProcessor.transporter, email, req.file.buffer, req.file.originalname, req.file.mimetype); // Pass the file buffer to processFile
+        const result = await fileProcessor.processFile(fileProcessor.transporter, recipient, req.file.buffer, req.file.originalname, req.file.mimetype);
 
         if (result === 1) {
             return res.status(201).json({ message: 'This file has been mailed successfully to the recipient' });
         } else {
-            return res.status(500).json({ error: 'Failed to send the email' }); // Handle the error case properly
+            return res.status(500).json({ error: 'Failed to send the email' });
         }
     } catch (error) {
-        console.error("Error in /upload route:", error);
-        return res.status(500).json({ error: 'Internal Server Error' }); // Handle unexpected errors
+        console.error("Error in /upload-doc route:", error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-
-// Define a GET API to fetch a file by filename
+/**
+ * @swagger
+ * /fetch-file:
+ *   get:
+ *     summary: Fetch a file by filename
+ *     description: Retrieve a file by providing its filename as a query parameter.
+ *     tags: [File Management]
+ *     parameters:
+ *       - name: filename
+ *         in: query
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The filename of the file to fetch.
+ *     responses:
+ *       '200':
+ *         description: File fetched successfully and available for download
+ *       '400':
+ *         description: Bad request or missing filename
+ *       '404':
+ *         description: File not found
+ *       '500':
+ *         description: Internal server error
+ */
 app.get('/fetch-file', async (req, res) => {
     try {
         const { filename } = req.query;
@@ -44,24 +122,46 @@ app.get('/fetch-file', async (req, res) => {
             return res.status(404).json({ error: result.error });
         }
 
-        // Set the appropriate content type based on the file extension
         const mimeType = result.mimeType || 'application/octet-stream';
         res.setHeader('Content-Type', mimeType);
-
-        // Set the Content-Disposition header to make the file downloadable
         res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-
-        // Use res.download to send the file as an attachment
         res.download(result.filePath, filename);
-
     } catch (error) {
         console.error("Error in /fetch-file route:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-
-// Define a route for updating document status
+/**
+ * @swagger
+ * /update-doc-status:
+ *   post:
+ *     summary: Update document status
+ *     description: Update the status of a document for a user.
+ *     tags: [File Management]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: The username of the user.
+ *               document_status:
+ *                 type: string
+ *                 description: The new status of the document.
+ *     responses:
+ *       '200':
+ *         description: Document status updated successfully
+ *       '400':
+ *         description: Bad request or missing data
+ *       '404':
+ *         description: User not found
+ *       '500':
+ *         description: Internal server error
+ */
 app.post('/update-doc-status', async (req, res) => {
     try {
         const { username, document_status } = req.body;
@@ -70,16 +170,15 @@ app.post('/update-doc-status', async (req, res) => {
             return res.status(400).json({ error: 'Invalid request data' });
         }
 
-        // Call the updateDocumentStatus function to update the document status for the user
         const result = await fileProcessor.updateDocumentStatus(username, document_status);
 
         if (result === 1) {
-            return res.status(200).json({ message: 'Document status updated  as: ', document_status });
+            return res.status(200).json({ message: 'Document status updated successfully' });
         } else {
             return res.status(404).json({ error: 'User not found' });
         }
     } catch (error) {
-        console.error("Error in /update-doc route:", error);
+        console.error("Error in /update-doc-status route:", error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
