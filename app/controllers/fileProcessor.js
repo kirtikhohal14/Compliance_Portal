@@ -13,11 +13,11 @@ const upload = multer({ storage });
 // Define a route for uploading a text file
 app.post('/upload-doc', upload.single('file'), async (req, res) => {
     try {
-        const { recipient } = req.body;
+        const { email } = req.body;
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        const result = await fileProcessor.processFile(fileProcessor.transporter, recipient, req.file.buffer, req.file.originalname, req.file.mimetype); // Pass the file buffer to processFile
+        const result = await fileProcessor.processFile(fileProcessor.transporter, email, req.file.buffer, req.file.originalname, req.file.mimetype); // Pass the file buffer to processFile
 
         if (result === 1) {
             return res.status(201).json({ message: 'This file has been mailed successfully to the recipient' });
@@ -74,7 +74,7 @@ app.post('/update-doc-status', async (req, res) => {
         const result = await fileProcessor.updateDocumentStatus(username, document_status);
 
         if (result === 1) {
-            return res.status(200).json({ message: 'Document status updated successfully' });
+            return res.status(200).json({ message: 'Document status updated  as: ', document_status });
         } else {
             return res.status(404).json({ error: 'User not found' });
         }

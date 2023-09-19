@@ -3,6 +3,7 @@ const { Readable } = require('stream'); // To create a readable stream
 require('dotenv').config();
 const password = process.env.GMAIL_PASSWORD;
 const folderPath = process.env.FOLDER_PATH;
+const admin = process.env.ADMIN_EMAIL;
 const pool = require('../config/postgres.config');
 const fs = require('fs');
 const path = require('path');
@@ -12,13 +13,22 @@ const path = require('path');
 const transporter = nodemailer.createTransport({
     service: 'Gmail',
     auth: {
-        user: 'khohalkirti@gmail.com',
+        user: admin,
         pass: password
     }
 });
 
-async function processFile(transporter, recipient, fileBuffer, filename, mimeType) {
+async function processFile(transporter, email, fileBuffer, filename, mimeType) {
     try {
+        // Check if the recipient is a valid email in the database
+        console.log(email);
+        const { rowCount } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+        if (rowCount === 0) {
+            console.error("This email ID is not a valid email in the database");
+            return 0; // Return failure
+        }
+
         // Create a readable stream from the file buffer
         const fileStream = new Readable();
         fileStream.push(fileBuffer);
@@ -35,9 +45,15 @@ async function processFile(transporter, recipient, fileBuffer, filename, mimeTyp
             fileStream.on('error', reject);
         });
 
+        // Update the document_path for the user
+
+        await pool.query('UPDATE users SET document_path = $1 WHERE email = $2', [filePath, email]);
+        console.log("document path is set in the database")
+
+
         // Send email with the CSV attachment
-        await transporter.sendMail({
-            from: 'khohalkirti@gmail.com', // Sender's email address
+        const mailInfo = await transporter.sendMail({
+            from: admin, // Sender's email address
             to: recipient, // Recipient's email address
             subject: 'Text File',
             text: 'Please find the attached file for approving/rejecting.',
@@ -50,12 +66,20 @@ async function processFile(transporter, recipient, fileBuffer, filename, mimeTyp
             ],
         });
 
-        return 1; // Return success
+        if (mailInfo.messageId) {
+            console.log("Email sent successfully:", mailInfo.response);
+            return 1; // Return success
+        } else {
+            console.error("Error sending email:", mailInfo);
+            return 0; // Return failure
+        }
     } catch (error) {
-        console.error("Error in mailing the text file:", error);
+        console.error("Error in processFile:", error);
         return 0; // Return failure
     }
 }
+
+
 
 
 // Function to fetch a file by filename
@@ -91,14 +115,14 @@ async function getFile(filename) {
 async function updateDocumentStatus(username, documentStatus) {
     try {
         // Check if the user exists in the "Users" table
-        const { rowCount } = await pool.query('SELECT * FROM Users WHERE username = $1', [username]);
+        const { rowCount } = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
         if (rowCount === 0) {
             return 0; // User not found
         }
 
         // Update the document_status for the user
-        await pool.query('UPDATE Users SET document_status = $1 WHERE username = $2', [documentStatus, username]);
+        await pool.query('UPDATE users SET document_status = $1 WHERE username = $2', [documentStatus, username]);
 
         return 1; // Document status updated successfully
     } catch (error) {

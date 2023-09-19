@@ -7,7 +7,7 @@ const secretKey = process.env.SECRET_KEY;
 async function login(username, password) {
     try {
         // Query the database to find a user with the given username
-        const { rows } = await pool.query('SELECT * FROM Users WHERE username = $1', [username]);
+        const { rows } = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
         if (rows.length === 0) {
             // No user with the given username found
