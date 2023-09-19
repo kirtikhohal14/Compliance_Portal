@@ -13,7 +13,7 @@ app.use(express.json());
 
 /**
  * @swagger
- * /login:
+ * /api/login:
  *   post:
  *     summary: Authenticate a user
  *     tags: [Authentication]

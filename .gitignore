@@ -1,5 +1,5 @@
-# dotenv environment variables file
-.env
-
-# Dependency directories
+# Ignore the node_modules folder
 node_modules/
+
+# Ignore the .env file
+.env

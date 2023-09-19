@@ -20,7 +20,7 @@ const upload = multer({ storage });
 
 /**
  * @swagger
- * /upload-doc:
+ * /api/upload-doc:
  *   post:
  *     summary: Upload a document
  *     description: Upload a text document and send it to a recipient.
