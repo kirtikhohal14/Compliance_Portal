@@ -94,12 +94,7 @@ async function getFile(filename) {
 
         // Determine the MIME type based on the file extension (you can add more types as needed)
         let mimeType = 'application/octet-stream';
-        // const extname = path.extname(filename);
-        // if (extname === '.txt') {
-        //     mimeType = 'text/plain';
-        // } else if (extname === '.pdf') {
-        //     mimeType = 'application/pdf';
-        // } // Add more MIME types as needed
+
 
         return { filePath, mimeType };
     } catch (error) {
