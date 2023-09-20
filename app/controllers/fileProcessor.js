@@ -42,7 +42,7 @@ const upload = multer({ storage });
  *               file:
  *                 type: string
  *                 format: binary
- *               recipient:
+ *               email:
  *                 type: string
  *     responses:
  *       '201':
