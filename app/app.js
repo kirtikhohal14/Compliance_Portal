@@ -6,18 +6,12 @@ const fileProcessor = require('./controllers/fileProcessor'); // Import the file
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger.config');
-const { document_approval } = require('./taskScheduler/document_approval');
-const cron = require('node-cron');
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Add the auth routes
 app.use('/api', forgetpass);
 app.use('/api', login);
-cron.schedule('54 15 * * *', async () => {
-
-    document_approval();
-})
 
 // Apply the verifyToken middleware to all routes after this point
 app.use(function (req, res, next) {

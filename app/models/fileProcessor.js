@@ -124,7 +124,7 @@ async function updateDocumentStatus(username, documentStatus) {
         // Update the document_status for the user
         await pool.query('UPDATE users SET document_status = $1 WHERE username = $2', [documentStatus, username]);
 
-        if (documentStatus === "rejected") {    
+        if (documentStatus === "rejected") {
             // Fetch the document_path
             const documentPath = user.document_path;
 
@@ -145,6 +145,26 @@ async function updateDocumentStatus(username, documentStatus) {
 
             // Update the document_status back to "pending"
             await pool.query('UPDATE users SET document_status = $1 WHERE username = $2', ['document_under_correction', username]);
+        }
+
+        else if (documentStatus === "pending_approval") {
+            const recipientEmail = user.email; // Get the email address of the approver
+            const documentPath = user.document_path; // Get the document path
+
+            // Send an email to the approver with HTML content
+            await transporter.sendMail({
+                from: admin,
+                to: recipientEmail,
+                subject: 'Document Approval Request',
+                html: `
+            <html>
+                <body>
+                    <p>A document is awaiting your approval. Please review and approve or reject it.</p>
+                    <p>Document Link: <a href="${documentPath}">${documentPath}</a></p>
+                </body>
+            </html>
+        `,
+            });
         }
 
         return 1; // Document status updated successfully
