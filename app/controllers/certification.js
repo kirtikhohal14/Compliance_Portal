@@ -1,6 +1,5 @@
 const express = require('express');
-const certificationModel = require('../models/certification'); // Import the certification model
-
+const queries = require('../utilities/queries')
 const router = express.Router();
 
 /**
@@ -101,24 +100,32 @@ router.get('/certification-list', async (req, res) => {
         const pageSizeInt = parseInt(pageSize);
 
         // Construct a dynamic SQL query with filtering conditions based on filter parameters
-        const query = {
-            text: `
-                SELECT * FROM "certification_list"
-                WHERE
-                    ($1::text IS NULL OR "Certificate#" = $1::text)
-                    AND ($2::character varying IS NULL OR "Category" = $2::character varying)
-                    AND ($3::character varying IS NULL OR "Status" = $3::character varying)
-                    AND ($4::character varying IS NULL OR "Bus.Type" = $4::character varying)
-                    AND ($5::character varying IS NULL OR "Destination" = $5::character varying)
-                    AND ($6::character varying IS NULL OR "ModelNo" = $6::character varying)
-                LIMIT $7 OFFSET $8
-            `,
-            values: [Certification, Category, Status, BusinessType, Destination, ModelNumber, pageSizeInt, (pageNumberInt - 1) * pageSizeInt],
-        };
-        
+        // const query = {
+        //     text: `
+        //         SELECT * FROM "certification_list"
+        //         WHERE
+        //             ($1::text IS NULL OR "Certificate#" = $1::text)
+        //             AND ($2::character varying IS NULL OR "Category" = $2::character varying)
+        //             AND ($3::character varying IS NULL OR "Status" = $3::character varying)
+        //             AND ($4::character varying IS NULL OR "Bus.Type" = $4::character varying)
+        //             AND ($5::character varying IS NULL OR "Destination" = $5::character varying)
+        //             AND ($6::character varying IS NULL OR "ModelNo" = $6::character varying)
+        //         LIMIT $7 OFFSET $8
+        //     `,
+        //     values: [Certification, Category, Status, BusinessType, Destination, ModelNumber, pageSizeInt, (pageNumberInt - 1) * pageSizeInt],
+        // };
+
+
+        // Define the filter columns and data types for the "certification_list" table
+        const certificationFilterColumns = ["Certificate#", "Category", "Status", "Bus.Type", "Destination", "ModelNo"];
+        const certificationFilterDataTypes = ["text", "character varying", "character varying", "character varying", "character varying", "character varying"];
+        const filterValues = [Certification, Category, Status, BusinessType, Destination, ModelNumber]
+        // Use the generateQuery function to create the query
+        const query = await queries.generateQuery("certification_list", certificationFilterColumns, certificationFilterDataTypes, filterValues, pageNumberInt, pageSizeInt);
+
 
         // Call the function from the model to fetch data with dynamic filtering and pagination
-        const certificationList = await certificationModel.getCertificationListWithFilters(query);
+        const certificationList = await queries.getListWithFilters(query);
 
         // Send the fetched data as a response
         res.status(200).json(certificationList);
