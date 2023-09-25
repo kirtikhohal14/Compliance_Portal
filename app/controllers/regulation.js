@@ -3,6 +3,89 @@ const queries = require('../utilities/queries')
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Regulation List
+ *   description: API endpoints for fetching a list of regulations
+ */
+
+/**
+ * @swagger
+ * /regulation-list:
+ *   get:
+ *     summary: Fetch a list of regulations
+ *     description: Fetch a list of regulations with optional filtering and pagination.
+ *     tags: [Regulation List]
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         description: Access token
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: pageNumber
+ *         description: Page number for pagination.
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: pageSize
+ *         description: Number of items per page.
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: category
+ *         description: Filter by category (optional).
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: country
+ *         description: Filter by country (optional).
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: regulation_number
+ *         description: Filter by regulation number (optional).
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: regulation_name
+ *         description: Filter by regulation name (optional).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: List of regulations fetched successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   // Define the properties of each regulation object here
+ *       '400':
+ *         description: Bad request or missing required parameters.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       '500':
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
 
 // Define the API endpoint
 router.get('/regulation-list', async (req, res) => {
