@@ -8,12 +8,15 @@ async function generateQuery(tableName, filterColumns, filterDataTypes, filterVa
 
         // Create filter conditions based on filter columns and data types
         for (let i = 0; i < filterColumns.length; i++) {
-
-            filterConditions.push(`($${i + 1}::${filterDataTypes[i]} IS NULL OR "${filterColumns[i]}" ILIKE $${i + 1}::${filterDataTypes[i]})`);
-            //filterValues[i] = `%${filterValues[i]}%`; // Add % wildcards for partial matching
-
+            if (filterDataTypes[i].endsWith('[]')) {
+                // Handle array filtering using the ANY operator with type casting
+                const arrayType = filterDataTypes[i].replace('[]', '');
+                filterConditions.push(`($${i + 1}::${arrayType}[] IS NULL OR $${i + 1}::${arrayType}[] && "${filterColumns[i]}")`);
+            } else {
+                // Handle wildcard pattern matching for non-array columns
+                filterConditions.push(`($${i + 1}::${filterDataTypes[i]} IS NULL OR "${filterColumns[i]}" ILIKE '%' || $${i + 1} || '%')`);
+            }
         }
-
 
         // Construct the SQL query
         const query = {
