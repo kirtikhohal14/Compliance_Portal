@@ -15,10 +15,11 @@ const options = {
     ],
   },
   apis: ['./app/controllers/login.js',
-        './app/controllers/resetPassword.js',
-        './app/controllers/fileProcessor.js',
-      './app/controllers/certification.js',
-      './app/controllers/regulation.js'] // Define the path to your route files
+    './app/controllers/resetPassword.js',
+    './app/controllers/fileProcessor.js',
+    './app/controllers/certification.js',
+    './app/controllers/regulation.js',
+    './app/controllers/mea_plugs.js']
 };
 
 const swaggerSpec = swaggerJSDoc(options);

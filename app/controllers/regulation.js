@@ -99,11 +99,13 @@ router.get('/regulation-list', async (req, res) => {
         // Parse pageNumber and pageSize as integers
         const pageNumberInt = parseInt(pageNumber);
         const pageSizeInt = parseInt(pageSize);
+
         // Define the filter columns and data types for the "regulation_list" table
-        const regulationFilterColumns = ["category", "country", "doc no.", "regulation"];
+        const regulationFilterColumns = ["category", "country", "doc_no.", "regulation"];
         const regulationFilterDataTypes = ["text", "character varying", "character varying", "text"];
         const filterValues = [category, country, regulation_number, regulation_name]
         console.log(filterValues);
+
         // Use the generateQuery function to create the query
         const query = await queries.generateQuery("regulation_list", regulationFilterColumns, regulationFilterDataTypes, filterValues, pageNumberInt, pageSizeInt);
         console.log("Query: ", query)
