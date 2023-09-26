@@ -117,12 +117,14 @@ router.get('/certification-list', async (req, res) => {
 
 
         // Define the filter columns and data types for the "certification_list" table
-        const certificationFilterColumns = ["Certificate#", "Category", "Status", "Bus.Type", "Destination", "ModelNo"];
+        const certificationFilterColumns = ["certificate#", "category", "status", "bus.type", "destination", "modelNo"];
         const certificationFilterDataTypes = ["text", "character varying", "character varying", "character varying", "character varying", "character varying"];
         const filterValues = [Certification, Category, Status, BusinessType, Destination, ModelNumber]
+        //console.log(filterValues);
+
         // Use the generateQuery function to create the query
         const query = await queries.generateQuery("certification_list", certificationFilterColumns, certificationFilterDataTypes, filterValues, pageNumberInt, pageSizeInt);
-
+        //console.log("query : ", query)
 
         // Call the function from the model to fetch data with dynamic filtering and pagination
         const certificationList = await queries.getListWithFilters(query);
