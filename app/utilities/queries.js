@@ -8,8 +8,12 @@ async function generateQuery(tableName, filterColumns, filterDataTypes, filterVa
 
         // Create filter conditions based on filter columns and data types
         for (let i = 0; i < filterColumns.length; i++) {
-            filterConditions.push(`($${i + 1}::${filterDataTypes[i]} IS NULL OR "${filterColumns[i]}" = $${i + 1}::${filterDataTypes[i]})`);
+
+            filterConditions.push(`($${i + 1}::${filterDataTypes[i]} IS NULL OR "${filterColumns[i]}" ILIKE $${i + 1}::${filterDataTypes[i]})`);
+            //filterValues[i] = `%${filterValues[i]}%`; // Add % wildcards for partial matching
+
         }
+
 
         // Construct the SQL query
         const query = {

@@ -101,7 +101,7 @@ router.get('/regulation-list', async (req, res) => {
         const pageSizeInt = parseInt(pageSize);
 
          // Define the filter columns and data types for the "regulation_list" table
-         const regulationFilterColumns = ["category", "country", "doc_no.", "regulation"];
+         const regulationFilterColumns = ["category", "country", "doc_No.", "regulation"];
          const regulationFilterDataTypes = ["text", "character varying", "character varying", "text"];
          const filterValues = [category, country, regulation_number, regulation_name]
          // Use the generateQuery function to create the query
