@@ -5,6 +5,7 @@ const verifyToken = require('./middleware/tokenauth'); // Import the verifyToken
 const fileProcessor = require('./controllers/fileProcessor'); // Import the fileProcessor controller
 const certification = require('./controllers/certification');
 const regulation = require('./controllers/regulation')
+const tr_mapping = require('./controllers/tr_mapping')
 const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger.config');
@@ -34,7 +35,10 @@ app.use(function (req, res, next) {
 // Define your other routes here, which will now require the valid x-access-token
 app.use('/api', fileProcessor);
 app.use('/api', certification);
-app.use('/api', regulation)
+app.use('/api', regulation);
+app.use('/api', tr_mapping);
+
+
 
 
 

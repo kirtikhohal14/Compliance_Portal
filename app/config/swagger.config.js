@@ -18,7 +18,9 @@ const options = {
         './app/controllers/resetPassword.js',
         './app/controllers/fileProcessor.js',
       './app/controllers/certification.js',
-      './app/controllers/regulation.js'] // Define the path to your route files
+      './app/controllers/regulation.js',
+      './app/controllers/tr_mapping.js']
+    // Define the path to your route files
 };
 
 const swaggerSpec = swaggerJSDoc(options);
