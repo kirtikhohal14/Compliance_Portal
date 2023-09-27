@@ -21,7 +21,7 @@ const options = {
     './app/controllers/regulation.js',
      './app/controllers/tr_mapping.js',
      './app/controllers/mea_plugs.js']
->>>>>>> c3bf78a367e1601bfb64a82c5066c664665c6b40
+
 };
 
 const swaggerSpec = swaggerJSDoc(options);
