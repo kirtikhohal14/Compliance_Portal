@@ -9,6 +9,9 @@ const app = express();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./config/swagger.config');
 
+const cors = require('cors'); // Import the cors package
+app.use(cors());
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Add the auth routes
