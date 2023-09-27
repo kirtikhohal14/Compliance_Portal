@@ -19,8 +19,9 @@ const options = {
     './app/controllers/fileProcessor.js',
     './app/controllers/certification.js',
     './app/controllers/regulation.js',
-    './app/controllers/mea_plugs.js',
-    './app/controllers/tr_mapping.js']
+     './app/controllers/tr_mapping.js',
+     './app/controllers/mea_plugs.js']
+
 };
 
 const swaggerSpec = swaggerJSDoc(options);
