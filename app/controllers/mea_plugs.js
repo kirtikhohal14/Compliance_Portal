@@ -3,20 +3,21 @@ const queries = require('../utilities/queries')
 
 const router = express.Router();
 
+
 /**
  * @swagger
  * tags:
- *   name: Regulation List
- *   description: API endpoints for fetching a list of regulations
+ *   name: MEA Plugs
+ *   description: API endpoints for fetching a list of MEA Plugs
  */
 
 /**
  * @swagger
- * /regulation-list:
+ * /mea-plugs:
  *   get:
- *     summary: Fetch a list of regulations
- *     description: Fetch a list of regulations with optional filtering and pagination.
- *     tags: [Regulation List]
+ *     summary: Fetch a list of MEA Plugs
+ *     description: Fetch a list of MEA Plugs with optional filtering and pagination.
+ *     tags: [MEA Plugs]
  *     parameters:
  *       - in: header
  *         name: x-access-token
@@ -37,28 +38,28 @@ const router = express.Router();
  *         schema:
  *           type: integer
  *       - in: query
- *         name: category
- *         description: Filter by category (optional).
- *         schema:
- *           type: string
- *       - in: query
  *         name: country
  *         description: Filter by country (optional).
  *         schema:
  *           type: string
  *       - in: query
- *         name: regulation_number
- *         description: Filter by regulation number (optional).
+ *         name: voltage
+ *         description: Filter by voltage (optional).
  *         schema:
  *           type: string
  *       - in: query
- *         name: regulation_name
- *         description: Filter by regulation name (optional).
+ *         name: frequency
+ *         description: Filter by frequency (optional).
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: plug_type
+ *         description: Filter by plug type (optional).
  *         schema:
  *           type: string
  *     responses:
  *       '200':
- *         description: List of regulations fetched successfully.
+ *         description: List of mea plugs fetched successfully.
  *         content:
  *           application/json:
  *             schema:
@@ -66,7 +67,7 @@ const router = express.Router();
  *               items:
  *                 type: object
  *                 properties:
- *                   // Define the properties of each regulation object here
+ *                   // Define the properties of each mea plugs object here
  *       '400':
  *         description: Bad request or missing required parameters.
  *         content:
@@ -87,10 +88,11 @@ const router = express.Router();
  *                   type: string
  */
 
+
 // Define the API endpoint
-router.get('/regulation-list', async (req, res) => {
+router.get('/mea-plugs', async (req, res) => {
     try {
-        const { pageNumber, pageSize, category, country, regulation_number, regulation_name } = req.query;
+        const { pageNumber, pageSize, country, voltage, frequency, plug_type } = req.query;
         // Check if pageNumber and pageSize are provided in the query parameters
         if (!pageNumber || !pageSize) {
             return res.status(400).json({ error: 'pageNumber and pageSize are required in query parameters' });
@@ -99,23 +101,25 @@ router.get('/regulation-list', async (req, res) => {
         // Parse pageNumber and pageSize as integers
         const pageNumberInt = parseInt(pageNumber);
         const pageSizeInt = parseInt(pageSize);
-        // Define the filter columns and data types for the "regulation_list" table
-        const regulationFilterColumns = ["category", "country", "doc_no.", "regulation"];
-        const regulationFilterDataTypes = ["text", "character varying", "character varying", "text"];
-        const filterValues = [category, country, regulation_number, regulation_name]
-        
+
+        // Define the filter columns and data types for the "mea plugs" table
+        const meaFilterColumns = ["country", "voltage", "frequency", "plugtype"];
+        const meaFilterDataTypes = ["character varying", "text", "text", "text[]"];
+        const filterValues = [country, voltage, frequency, plug_type]
+        console.log(filterValues);
+
         // Use the generateQuery function to create the query
-        const query = await queries.generateQuery("regulation_list", regulationFilterColumns, regulationFilterDataTypes, filterValues, pageNumberInt, pageSizeInt);
-        
+        const query = await queries.generateQuery("mea_plugs", meaFilterColumns, meaFilterDataTypes, filterValues, pageNumberInt, pageSizeInt);
+        console.log("Query: ", query)
 
         // Call the function from the model to fetch data with dynamic filtering and pagination
-        const regulationList = await queries.getListWithFilters(query);
+        const mea_plugs = await queries.getListWithFilters(query);
 
         // Send the fetched data as a response
-        res.status(200).json(regulationList);
+        res.status(200).json(mea_plugs);
     } catch (error) {
         // Handle any errors
-        console.error("Error fetching regulation list:", error);
+        console.error("Error fetching mea plugs:", error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
