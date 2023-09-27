@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../config/postgres.config');
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -15,9 +16,11 @@ async function login(username, password) {
         }
 
         const user = rows[0];
+        // Hash the database password with bcrypt algorithm
+        const hashedPassword = await bcrypt.hash(user.password, 10); // You can adjust the salt rounds as needed
 
         // Compare the password from the request with the hashed password from the database
-        if (password === user.password) {
+        if (password === hashedPassword) {
             // Passwords match, generate a JWT token
             const token = jwt.sign({ username }, secretKey, { expiresIn: '12h' });
             return { message: 'You have logged in successfully.', token };
