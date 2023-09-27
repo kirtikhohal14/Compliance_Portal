@@ -1,10 +1,10 @@
-const clientRedis = require('../config/redis.config')
+const client = require('../config/redis.config')
 
 // Function to store the QR code in Redis cache
 const storeInRedisCache = (key, value, tll) => {
     return new Promise(async (resolve, reject) => {
         try {
-            await clientRedis.set(key, value, { EX: tll });
+            await client.set(key, value, { EX: tll });
 
             resolve('Data stored in Redis cache successfully!');
         } catch (error) {
@@ -18,12 +18,12 @@ const getValueFromCache = (key) => {
     return new Promise(async (resolve, reject) => {
         try {
 
-            clientRedis.on("error", (err) => {
+            client.on("error", (err) => {
                 console.error(err);
                 reject(err);
             })
 
-            const value = await clientRedis.get(key);
+            const value = await client.get(key);
             resolve(value);
         }
         catch (err) {
