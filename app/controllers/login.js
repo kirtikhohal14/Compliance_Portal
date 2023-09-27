@@ -77,9 +77,11 @@ app.post('/login', async (req, res) => {
         const response = await authService.login(username, password);
 
         if (response.error) {
+            console.log(response.error);
             res.status(401).json({ error: response.error });
         } else {
             // Return both the message and the token
+            console.log(response.message)
             res.status(200).json({ message: response.message, token: response.token });
         }
     } catch (error) {

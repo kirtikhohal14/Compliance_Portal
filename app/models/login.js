@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../config/postgres.config');
 require('dotenv').config();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
+const base64 = require("base-64");
 
 const secretKey = process.env.SECRET_KEY;
 
@@ -16,16 +17,28 @@ async function login(username, password) {
         }
 
         const user = rows[0];
+        const pass = base64.decode(password);
+        console.log(pass);
 
-        // Compare the password from the request with the hashed password from the database
-        if (password === user.password) {
-            // Passwords match, generate a JWT token
-            const token = jwt.sign({ username }, secretKey, { expiresIn: '12h' });
-            return { message: 'You have logged in successfully.', token };
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(pass, user.password, (err, result) => {
+                if (err) {
+                    console.log("Error: ", err);
+                    reject({ error: 'Invalid username or password.' });
+                } else if (result) {
+                    // Passwords match, generate a JWT token
+                    console.log("Result: ", result);
+                    const token = jwt.sign({ username }, secretKey, { expiresIn: '12h' });
+                    resolve({ message: 'You have logged in successfully.', token });
+                } else {
+                    reject({ error: 'Invalid username or password.' });
+                }
+            });
+        });
 
-        } else {
-            return { error: 'Invalid username or password.' };
-        }
+
+
+
     } catch (error) {
         console.error("Error in login function:", error);
         return { error: 'Internal Server Error' };
