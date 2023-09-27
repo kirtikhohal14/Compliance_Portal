@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../config/postgres.config');
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 
 const secretKey = process.env.SECRET_KEY;
 

@@ -88,31 +88,28 @@ router.get('/tr-mapping', async (req, res) => {
     }
 
 
-// Parse pageNumber and pageSize as integers
-const pageNumberInt = parseInt(pageNumber);
-const pageSizeInt = parseInt(pageSize);
+    // Parse pageNumber and pageSize as integers
+    const pageNumberInt = parseInt(pageNumber);
+    const pageSizeInt = parseInt(pageSize);
 
-// Define the filter columns and data types for the "tr_mapping" table
+    // Define the filter columns and data types for the "tr_mapping" table
     const trMappingFilterColumns = ["country", "category"];
     const trMappingFilterDataTypes = ["character varying", "character varying"];
     const filterValues = [country, category];
 
+    // Use the generateQuery function to create the query for "tr_mapping"
+    const query = await queries.generateQuery("tr_mapping", trMappingFilterColumns, trMappingFilterDataTypes, filterValues, pageNumberInt, pageSizeInt);
 
+    // Call the function from the model to fetch data with dynamic filtering and pagination
+    const trMappingList = await queries.getListWithFilters(query);
 
-
-// Use the generateQuery function to create the query for "tr_mapping"
-const query = await queries.generateQuery("tr_mapping", trMappingFilterColumns, trMappingFilterDataTypes, filterValues, pageNumberInt, pageSizeInt);
-
-// Call the function from the model to fetch data with dynamic filtering and pagination
-const trMappingList = await queries.getListWithFilters(query);
-
-  // Send the fetched data as a response
-  res.status(200).json(trMappingList);
-} catch (error) {
-  // Handle any errors
-  console.error("Error fetching tr_mapping list:", error);
-  res.status(500).json({ error: 'Internal Server Error' });
-}
+    // Send the fetched data as a response
+    res.status(200).json(trMappingList);
+  } catch (error) {
+    // Handle any errors
+    console.error("Error fetching tr_mapping list:", error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 module.exports = router;
